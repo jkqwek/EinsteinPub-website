@@ -34,7 +34,7 @@ pnpm-debug.log*
 Thumbs.db
 desktop.ini
 
-# Local Claude Code settings
-.claude/settings.local.json
+# Claude Code settings (local only)
+.claude/
 
 # Backend: add stack-specific rules here once the backend stack is chosen
