@@ -1,0 +1,65 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Unbounded:wght@400;500;600;700;800&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Manrope', sans-serif;
+  --font-display: 'Unbounded', sans-serif;
+
+  --color-forest: #053c29;
+  --color-forest-light: #075237;
+  --color-forest-dark: #03261a;
+  
+  --color-gold: #fabc55;
+  --color-gold-light: #fcd58b;
+  --color-gold-dark: #d69832;
+
+  --color-offwhite: #f5f0e1;
+  --color-offwhite-dim: #e2dcc8;
+
+  --color-background: var(--color-forest);
+  --color-foreground: var(--color-offwhite);
+  --color-primary: var(--color-gold);
+  --color-primary-foreground: var(--color-forest-dark);
+}
+
+@layer base {
+  body {
+    @apply bg-forest text-offwhite font-sans antialiased selection:bg-gold selection:text-forest-dark;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold;
+  }
+}
+
+/* @utility (not a plain class) so it lives in the utilities layer and
+   per-element classes like border-gold/20 or hover:border-gold/50 can override it */
+@utility glassmorphism {
+  @apply bg-forest-light/30 backdrop-blur-md border border-gold/10;
+}
+
+@utility glassmorphism-hover {
+  @apply hover:bg-forest-light/40 hover:border-gold/30 transition-all duration-300;
+}
+
+/* Used by Booking validation: animate-[shake_0.5s_ease-in-out] */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
+/* Slow sweep across the gradient text in the Home hero */
+.shimmer {
+  background-size: 200% auto;
+  animation: shimmer 3s ease-in-out infinite alternate;
+}
+
+@keyframes shimmer {
+  from { background-position: 0% center; }
+  to { background-position: 100% center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer { animation: none; }
+}
