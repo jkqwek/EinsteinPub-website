@@ -2,9 +2,9 @@
 // but shows the "coming soon" placeholder instead of the page.
 // Set a flag to true to publish that section again.
 export const enabledSections = {
-  menu: false,
+  menu: true,
   gallery: false,
   booking: false,
   contacts: false,
-  admin: false,
+  admin: true,
 }

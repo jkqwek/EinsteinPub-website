@@ -61,7 +61,7 @@ export function Gallery() {
               loading="lazy"
               className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
-            <div className="absolute inset-0 bg-forest-dark/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+            <div className="absolute inset-0 bg-burgundy/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
               <div className="w-12 h-12 rounded-full bg-gold text-forest-dark flex items-center justify-center transform scale-50 group-hover:scale-100 transition-transform duration-300 delay-100">
                 <ZoomIn size={20} />
               </div>

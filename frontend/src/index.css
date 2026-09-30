@@ -13,6 +13,9 @@
   --color-gold-light: #fcd58b;
   --color-gold-dark: #d69832;
 
+  /* Oxblood accent: trims, badges, tints - never body text on forest (too dark) */
+  --color-burgundy: #611820;
+
   --color-offwhite: #f5f0e1;
   --color-offwhite-dim: #e2dcc8;
 
@@ -23,6 +26,10 @@
 }
 
 @layer base {
+  html {
+    scrollbar-color: var(--color-burgundy) var(--color-forest-dark);
+  }
+
   body {
     @apply bg-forest text-offwhite font-sans antialiased selection:bg-gold selection:text-forest-dark;
   }

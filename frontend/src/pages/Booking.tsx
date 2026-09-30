@@ -60,7 +60,7 @@ export function Booking() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.2 }}
-            className="w-20 h-20 bg-gold/20 rounded-full flex items-center justify-center mx-auto mb-6 text-gold"
+            className="w-20 h-20 bg-burgundy ring-4 ring-burgundy/30 rounded-full flex items-center justify-center mx-auto mb-6 text-gold"
           >
             <Check size={40} />
           </motion.div>

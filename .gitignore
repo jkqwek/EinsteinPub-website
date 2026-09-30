@@ -37,4 +37,5 @@ desktop.ini
 # Claude Code settings (local only)
 .claude/
 
-# Backend: add stack-specific rules here once the backend stack is chosen
+# Backend: menu.json and uploaded photos
+backend/data/
