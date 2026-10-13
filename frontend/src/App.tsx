@@ -16,6 +16,8 @@ import {
   Loader2,
 } from "lucide-react"
 import { clsx, type ClassValue } from "clsx"
+import { useRef } from "react"
+import { OpenStatus } from "./components/OpenStatus"
 import { twMerge } from "tailwind-merge"
 
 import { Booking } from "./pages/Booking"
@@ -31,6 +33,7 @@ import { AdminGallery } from "./admin/Gallery"
 import { AdminBookings } from "./admin/Bookings"
 import {
   address,
+  heroStats,
   mapLink,
   openingHours,
   phone,
@@ -163,8 +166,91 @@ function Navbar() {
 }
 
 // --- Pages ---
+function HeroStat({
+  value,
+  label,
+  decimals = 0,
+  prefix = "",
+  suffix = "",
+}: {
+  value: number
+  label: string
+  decimals?: number
+  prefix?: string
+  suffix?: string
+}) {
+  const [display, setDisplay] = useState(0)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    let raf = 0
+    const duration = 1600
+    const start = performance.now()
+
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setDisplay(value * eased)
+      if (t < 1) raf = requestAnimationFrame(tick)
+      else setDisplay(value)
+    }
+
+    // Запускаем, когда блок попал в поле зрения
+    const el = ref.current
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          raf = requestAnimationFrame(tick)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.5 },
+    )
+    if (el) observer.observe(el)
+
+    return () => {
+      cancelAnimationFrame(raf)
+      observer.disconnect()
+    }
+  }, [value])
+
+  const formatted =
+    decimals > 0 ? display.toFixed(decimals) : Math.round(display).toString()
+
+  return (
+    <div ref={ref} className="text-center">
+      <div className="text-3xl md:text-4xl font-display text-gold tabular-nums">
+        {prefix}
+        {formatted}
+        {suffix}
+      </div>
+      <div className="text-xs md:text-sm text-offwhite-dim uppercase tracking-wider mt-1">
+        {label}
+      </div>
+    </div>
+  )
+}
+
 function Home() {
   const { data: events } = useApi<PubEvent[]>("/api/events/?limit=3")
+
+  // Ротация подзаголовка
+  const subtitles = [
+    "Крафтовое пиво",
+    "Изысканные вина",
+    "Интеллектуальные беседы",
+    "Особые вечера",
+  ]
+  const [subIndex, setSubIndex] = useState(0)
+
+  useEffect(() => {
+    const timer = setInterval(
+      () => setSubIndex((i) => (i + 1) % subtitles.length),
+      4000,
+    )
+    return () => clearInterval(timer)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <div className="min-h-screen">
@@ -178,7 +264,7 @@ function Home() {
           <div className="absolute inset-0 bg-gradient-to-b from-burgundy/40 via-forest/50 to-forest"></div>
         </div>
 
-        <div className="relative z-10 text-center px-4">
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -191,15 +277,29 @@ function Home() {
               ВЕЛИКИЕ УМЫ
             </span>
           </motion.h1>
-          <motion.p
+
+          {/* Ротация подзаголовка */}
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="text-lg md:text-xl text-offwhite-dim max-w-2xl mx-auto mb-10"
+            className="h-11 md:h-14 relative mb-10"
+            aria-live="polite"
           >
-            Крафтовое пиво, изысканные вина и интеллектуальные беседы в
-            премиальной атмосфере.
-          </motion.p>
+            <AnimatePresence mode="wait">
+              <motion.p
+                key={subIndex}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                className="absolute inset-0 font-display text-2xl md:text-3xl tracking-wide text-gold-light text-center"
+              >
+                {subtitles[subIndex]}
+              </motion.p>
+            </AnimatePresence>
+          </motion.div>
+
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -220,6 +320,27 @@ function Home() {
             </Link>
           </motion.div>
         </div>
+
+        {/* Stats внизу hero */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 1.2 }}
+          className="absolute bottom-6 md:bottom-10 left-0 right-0 z-10"
+        >
+          <div className="max-w-3xl mx-auto px-6 flex justify-center gap-16 md:gap-32">
+            {heroStats.map((s) => (
+              <HeroStat
+                key={s.label}
+                value={s.value}
+                label={s.label}
+                decimals={s.decimals}
+                prefix={s.prefix}
+                suffix={s.suffix}
+              />
+            ))}
+          </div>
+        </motion.div>
       </section>
 
       {/* Hidden until there is at least one upcoming event */}
@@ -521,15 +642,16 @@ function AppShell() {
                 {phone.label}
               </a>
             </div>
-            <div>
-              <h4 className="font-bold mb-4">Часы работы</h4>
-              <div className="space-y-2">
-                {openingHours.map(({ days, time }) => (
-                  <p key={days} className="text-offwhite-dim text-sm">
-                    {days}: {time}
-                  </p>
-                ))}
-              </div>
+              <div>
+                <h4 className="font-bold mb-4">Часы работы</h4>
+                <div className="space-y-2 mb-3">
+                  {openingHours.map(({ days, time }) => (
+                    <p key={days} className="text-offwhite-dim text-sm">
+                      {days}: {time}
+                    </p>
+                  ))}
+                </div>
+                <OpenStatus />
             </div>
             <div>
               <h4 className="font-bold mb-4">Мы в соцсетях</h4>

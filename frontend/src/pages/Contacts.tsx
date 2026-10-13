@@ -8,6 +8,7 @@ import {
   phone,
   socialLinks,
 } from "../siteInfo"
+import { OpenStatus } from "../components/OpenStatus"
 
 export function Contacts() {
   return (
@@ -40,8 +41,6 @@ export function Contacts() {
             height="100%"
             style={{
               border: 0,
-              // Приглушённая светлая карта: чуть темнее, менее контрастная,
-              // менее насыщенная — в тон тёмному сайту, но без инверсии.
               filter: "brightness(0.9) contrast(1.05) saturate(0.7)",
             }}
             allowFullScreen={false}
@@ -106,6 +105,9 @@ export function Contacts() {
                     </p>
                   ))}
                 </div>
+              </div>
+              <div className="mt-3 ml-8">
+                <OpenStatus />
               </div>
             </div>
 
