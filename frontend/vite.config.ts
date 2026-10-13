@@ -3,10 +3,14 @@ import react from "@vitejs/plugin-react"
 import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
 
-// The API (backend/) listens on :3000; both dev and preview forward these to it
+// Django (backend/) runs on :8000; dev and preview forward its paths to it:
+// the API, the admin with its static files, and uploaded photos
+const django = "http://localhost:8000"
 const proxy = {
-  "/api": "http://localhost:3000",
-  "/uploads": "http://localhost:3000",
+  "/api": django,
+  "/admin": django,
+  "/static": django,
+  "/media": django,
 }
 
 // https://vite.dev/config/

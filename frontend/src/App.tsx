@@ -21,7 +21,8 @@ import { twMerge } from "tailwind-merge"
 import { Booking } from "./pages/Booking"
 import { Gallery } from "./pages/Gallery"
 import { Contacts } from "./pages/Contacts"
-import { Admin } from "./pages/Admin"
+import { EventCard, Events } from "./pages/Events"
+import { Privacy } from "./pages/Privacy"
 import {
   address,
   mapLink,
@@ -30,7 +31,12 @@ import {
   socialLinks,
 } from "./siteInfo"
 import { enabledSections } from "./sections"
-import { categories, fetchMenu, formatPrice, type MenuItem } from "./menu"
+import {
+  formatPrice,
+  useApi,
+  type MenuCategory,
+  type PubEvent,
+} from "./api"
 import menuHero from "./assets/menu-hero.webp"
 
 function cn(...inputs: ClassValue[]) {
@@ -152,6 +158,8 @@ function Navbar() {
 
 // --- Pages ---
 function Home() {
+  const { data: events } = useApi<PubEvent[]>("/api/events/")
+
   return (
     <div className="min-h-screen">
       <section className="h-screen relative flex items-center justify-center overflow-hidden">
@@ -208,103 +216,55 @@ function Home() {
         </div>
       </section>
 
-      <section className="py-24 px-6 max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6"
-        >
-          <div>
-            <h2 className="text-3xl md:text-5xl font-display mb-4 text-gold">
-              БЛИЖАЙШИЕ СОБЫТИЯ
-            </h2>
-            <p className="text-offwhite-dim">
-              Особые вечера для ценителей вкуса и хорошей мысли.
-            </p>
-          </div>
-          <Link
-            to="/events"
-            className="text-gold flex items-center gap-2 hover:gap-4 transition-all uppercase text-sm font-bold"
+      {/* Hidden until there is at least one upcoming event */}
+      {enabledSections.events && events && events.length > 0 && (
+        <section className="py-24 px-6 max-w-7xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6"
           >
-            Все события <ArrowRight size={16} />
-          </Link>
-        </motion.div>
-
-        <div className="grid md:grid-cols-3 gap-6">
-          {[
-            {
-              title: "Вечер джаза и стаута",
-              date: "15 октября",
-              image:
-                "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&q=80&w=600",
-            },
-            {
-              title: "Дегустация крафтового пива",
-              date: "22 октября",
-              image:
-                "https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&q=80&w=600",
-            },
-            {
-              title: "Философский паб-квиз",
-              date: "29 октября",
-              image:
-                "https://images.unsplash.com/photo-1532634922-8fe0b757fb13?auto=format&fit=crop&q=80&w=600",
-            },
-          ].map((event, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group glassmorphism rounded-lg overflow-hidden cursor-pointer hover:shadow-[0_12px_40px_-8px_rgba(97,24,32,0.7)] transition-shadow duration-300"
+            <div>
+              <h2 className="text-3xl md:text-5xl font-display mb-4 text-gold">
+                БЛИЖАЙШИЕ СОБЫТИЯ
+              </h2>
+              <p className="text-offwhite-dim">
+                Особые вечера для ценителей вкуса и хорошей мысли.
+              </p>
+            </div>
+            <Link
+              to="/events"
+              className="text-gold flex items-center gap-2 hover:gap-4 transition-all uppercase text-sm font-bold"
             >
-              <div className="h-48 overflow-hidden relative">
-                <div className="absolute inset-0 bg-forest/20 group-hover:bg-transparent transition-colors z-10" />
-                <img
-                  src={event.image}
-                  alt={event.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                />
-              </div>
-              <div className="p-6">
-                <div className="inline-block bg-burgundy text-gold-light text-sm font-bold px-2 py-0.5 rounded-sm mb-2">
-                  {event.date}
-                </div>
-                <h3 className="text-xl font-display mb-2 break-words hyphens-auto group-hover:text-gold transition-colors">
-                  {event.title}
-                </h3>
-                <p className="text-offwhite-dim text-sm line-clamp-2">
-                  Вечер изысканных вкусов и отличной компании в самом сердце
-                  города.
-                </p>
-              </div>
-            </motion.div>
-          ))}
-        </div>
-      </section>
+              Все события <ArrowRight size={16} />
+            </Link>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            {events.slice(0, 3).map((event, i) => (
+              <EventCard key={event.id} event={event} index={i} />
+            ))}
+          </div>
+        </section>
+      )}
     </div>
   )
 }
 
 function Menu() {
   const [activeTab, setActiveTab] = useState("All")
-  const [items, setItems] = useState<MenuItem[] | null>(null)
-  const [failed, setFailed] = useState(false)
-
-  useEffect(() => {
-    fetchMenu().then(setItems, () => setFailed(true))
-  }, [])
+  const { data: menu, failed } = useApi<MenuCategory[]>("/api/menu/")
+  const categories = (menu ?? []).filter((c) => c.dishes.length > 0)
 
   const tabs = [
     { id: "All", label: "Все" },
-    ...Object.entries(categories).map(([id, label]) => ({ id, label })),
+    ...categories.map((c) => ({ id: c.slug, label: c.name })),
   ]
 
-  const filtered = (items ?? []).filter(
-    (i) => activeTab === "All" || i.cat === activeTab,
-  )
+  const filtered = categories
+    .filter((c) => activeTab === "All" || c.slug === activeTab)
+    .flatMap((c) => c.dishes.map((dish) => ({ ...dish, category: c.name })))
 
   return (
     <div className="relative min-h-screen">
@@ -347,10 +307,10 @@ function Menu() {
           ))}
         </div>
 
-        {!items && !failed && (
+        {!menu && !failed && (
           <Loader2 className="mx-auto text-gold animate-spin" size={32} />
         )}
-        {(failed || (items && filtered.length === 0)) && (
+        {(failed || (menu && filtered.length === 0)) && (
           <p className="text-center text-offwhite-dim">
             {failed
               ? "Не удалось загрузить меню. Попробуйте обновить страницу."
@@ -381,7 +341,7 @@ function Menu() {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
                     <span className="absolute top-3 left-3 bg-burgundy text-gold-light text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-sm">
-                      {categories[item.cat]}
+                      {item.category}
                     </span>
                   </div>
                 )}
@@ -402,7 +362,7 @@ function Menu() {
                       </span>
                     )}
                   </div>
-                  <p className="text-offwhite-dim">{item.desc}</p>
+                  <p className="text-offwhite-dim">{item.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -494,7 +454,12 @@ export default function App() {
             enabledSections.menu ? <Menu /> : <Placeholder title="НАШЕ МЕНЮ" />
           }
         />
-        <Route path="/events" element={<Placeholder title="СОБЫТИЯ" />} />
+        <Route
+          path="/events"
+          element={
+            enabledSections.events ? <Events /> : <Placeholder title="СОБЫТИЯ" />
+          }
+        />
         <Route
           path="/gallery"
           element={
@@ -525,16 +490,7 @@ export default function App() {
             )
           }
         />
-        <Route
-          path="/admin"
-          element={
-            enabledSections.admin ? (
-              <Admin />
-            ) : (
-              <Placeholder title="АДМИН-ПАНЕЛЬ" />
-            )
-          }
-        />
+        <Route path="/privacy" element={<Privacy />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
 
@@ -597,6 +553,14 @@ export default function App() {
               ))}
             </div>
           </div>
+        </div>
+        <div className="max-w-7xl mx-auto px-6 mt-8">
+          <Link
+            to="/privacy"
+            className="text-offwhite-dim text-xs hover:text-gold transition-colors"
+          >
+            Политика конфиденциальности
+          </Link>
         </div>
       </footer>
     </BrowserRouter>

@@ -3,8 +3,8 @@
 // Set a flag to true to publish that section again.
 export const enabledSections = {
   menu: true,
+  events: true,
   gallery: false,
-  booking: false,
-  contacts: false,
-  admin: true,
+  booking: true,
+  contacts: true,
 }

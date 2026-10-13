@@ -1,20 +1,12 @@
 import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { ZoomIn, X, ChevronLeft, ChevronRight } from "lucide-react"
-
-const images = [
-  "https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1566633806327-68e152aaf26d?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1571613316887-6f8d5cbf7ef7?auto=format&fit=crop&q=80&w=600",
-  "https://images.unsplash.com/photo-1511192336575-5a79af67a629?auto=format&fit=crop&q=80&w=600",
-  "https://images.unsplash.com/photo-1532634922-8fe0b757fb13?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1628840042765-356cda07504e?auto=format&fit=crop&q=80&w=600",
-  "https://images.unsplash.com/photo-1535958636474-b021ee887b13?auto=format&fit=crop&q=80&w=800",
-  "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&q=80&w=800",
-]
+import { ZoomIn, X, ChevronLeft, ChevronRight, Loader2 } from "lucide-react"
+import { useApi, type Photo } from "../api"
 
 export function Gallery() {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null)
+  const { data: photos, failed } = useApi<Photo[]>("/api/gallery/")
+  const images = photos ?? []
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -27,7 +19,7 @@ export function Gallery() {
     }
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [selectedIndex])
+  }, [selectedIndex, images.length])
 
   return (
     <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto min-h-screen">
@@ -44,20 +36,31 @@ export function Gallery() {
         </p>
       </motion.div>
 
+      {!photos && !failed && (
+        <Loader2 className="mx-auto text-gold animate-spin" size={32} />
+      )}
+      {(failed || photos?.length === 0) && (
+        <p className="text-center text-offwhite-dim">
+          {failed
+            ? "Не удалось загрузить фото. Попробуйте обновить страницу."
+            : "Скоро здесь появятся фото."}
+        </p>
+      )}
+
       <div className="columns-1 sm:columns-2 md:columns-3 gap-6 space-y-6">
-        {images.map((src, i) => (
+        {images.map((photo, i) => (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ delay: (i % 3) * 0.1 }}
-            key={i}
+            key={photo.id}
             className="relative group cursor-pointer overflow-hidden rounded-lg break-inside-avoid"
             onClick={() => setSelectedIndex(i)}
           >
             <img
-              src={src}
-              alt="Фото из галереи"
+              src={photo.image}
+              alt={photo.caption || "Фото из галереи"}
               loading="lazy"
               className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
@@ -122,10 +125,15 @@ export function Gallery() {
               className="relative z-10 max-w-5xl max-h-[85vh] w-full"
             >
               <img
-                src={images[selectedIndex]}
-                alt="Увеличенное фото"
+                src={images[selectedIndex].image}
+                alt={images[selectedIndex].caption || "Увеличенное фото"}
                 className="w-full h-full object-contain rounded-lg shadow-[0_0_50px_rgba(0,0,0,0.5)] border border-gold/20"
               />
+              {images[selectedIndex].caption && (
+                <p className="mt-4 text-center text-offwhite">
+                  {images[selectedIndex].caption}
+                </p>
+              )}
             </motion.div>
           </motion.div>
         )}

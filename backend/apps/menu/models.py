@@ -1,5 +1,7 @@
 from django.db import models
 
+from apps.images import shrink_image
+
 
 class Category(models.Model):
     """Категория меню: Пиво, Коктейли, Вина, Горячее."""
@@ -45,3 +47,7 @@ class Dish(models.Model):
 
     def __str__(self):
         return f"{self.name} ({self.category.name})"
+
+    def save(self, *args, **kwargs):
+        shrink_image(self.image)
+        super().save(*args, **kwargs)

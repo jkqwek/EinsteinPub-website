@@ -42,5 +42,5 @@ desktop.ini
 # Claude Code settings (local only)
 .claude/
 
-# Backend: menu.json and uploaded photos
-backend/data/
+# Backend: photos uploaded through the Django admin
+backend/media/
