@@ -29,6 +29,6 @@ export const mapEmbedUrl =
 
 // TODO: replace "#" with the real community and channel URLs
 export const socialLinks = [
-  { name: "ВКонтакте", href: "#", icon: VkIcon },
-  { name: "Телеграм", href: "#", icon: TelegramIcon },
+  { name: "ВКонтакте", href: "https://vk.ru/pub_einstein", icon: VkIcon },
+  { name: "Телеграм", href: "https://t.me/Einstein_pub", icon: TelegramIcon },
 ]

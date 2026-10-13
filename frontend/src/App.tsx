@@ -23,6 +23,12 @@ import { Gallery } from "./pages/Gallery"
 import { Contacts } from "./pages/Contacts"
 import { EventCard, Events } from "./pages/Events"
 import { Privacy } from "./pages/Privacy"
+import { AdminLogin } from "./admin/Login"
+import { AdminLayout } from "./admin/AdminLayout"
+import { AdminEvents } from "./admin/Events"
+import { AdminMenu } from "./admin/Menu"
+import { AdminGallery } from "./admin/Gallery"
+import { AdminBookings } from "./admin/Bookings"
 import {
   address,
   mapLink,
@@ -158,7 +164,7 @@ function Navbar() {
 
 // --- Pages ---
 function Home() {
-  const { data: events } = useApi<PubEvent[]>("/api/events/")
+  const { data: events } = useApi<PubEvent[]>("/api/events/?limit=3")
 
   return (
     <div className="min-h-screen">
@@ -242,7 +248,7 @@ function Home() {
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            {events.slice(0, 3).map((event, i) => (
+            {events.map((event, i) => (
               <EventCard key={event.id} event={event} index={i} />
             ))}
           </div>
@@ -254,7 +260,7 @@ function Home() {
 
 function Menu() {
   const [activeTab, setActiveTab] = useState("All")
-  const { data: menu, failed } = useApi<MenuCategory[]>("/api/menu/")
+  const { data: menu, loading, failed } = useApi<MenuCategory[]>("/api/menu/")
   const categories = (menu ?? []).filter((c) => c.dishes.length > 0)
 
   const tabs = [
@@ -307,10 +313,10 @@ function Menu() {
           ))}
         </div>
 
-        {!menu && !failed && (
+        {loading && (
           <Loader2 className="mx-auto text-gold animate-spin" size={32} />
         )}
-        {(failed || (menu && filtered.length === 0)) && (
+        {!loading && (failed || (menu && filtered.length === 0)) && (
           <p className="text-center text-offwhite-dim">
             {failed
               ? "Не удалось загрузить меню. Попробуйте обновить страницу."
@@ -412,40 +418,16 @@ function NotFound() {
   )
 }
 
-export default function App() {
-  const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
-    // Simulate preloader
-    const timer = setTimeout(() => setLoading(false), 2000)
-    return () => clearTimeout(timer)
-  }, [])
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-forest flex items-center justify-center z-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1, ease: "easeOut" }}
-          className="text-gold font-display text-6xl font-black tracking-widest relative"
-        >
-          EINSTEIN
-          <motion.div
-            initial={{ width: 0 }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 1.5, delay: 0.5 }}
-            className="absolute -bottom-2 left-0 h-1 bg-gold"
-          />
-        </motion.div>
-      </div>
-    )
-  }
+// Всё, что под <BrowserRouter>: навбар, роуты, футер.
+// На /admin/* прячем публичные навбар и футер — там своя оболочка.
+function AppShell() {
+  const { pathname } = useLocation()
+  const isAdmin = pathname.startsWith("/admin")
 
   return (
-    <BrowserRouter>
-      <ScrollToTop />
-      <Navbar />
+    <>
+      {!isAdmin && <Navbar />}
+
       <Routes>
         <Route path="/" element={<Home />} />
         <Route
@@ -491,78 +473,128 @@ export default function App() {
           }
         />
         <Route path="/privacy" element={<Privacy />} />
+
+        {/* Админка сайта */}
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin" element={<AdminLayout />}>
+          <Route index element={<AdminEvents />} />
+          <Route path="events" element={<AdminEvents />} />
+          <Route path="menu" element={<AdminMenu />} />
+          <Route path="gallery" element={<AdminGallery />} />
+          <Route path="bookings" element={<AdminBookings />} />
+        </Route>
+
         <Route path="*" element={<NotFound />} />
       </Routes>
 
-      {/* Footer */}
-      <footer className="bg-forest-dark py-12 border-t border-gold/10">
-        <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div>
-            <div className="font-display text-2xl text-gold font-bold mb-4">
-              EINSTEIN
+      {!isAdmin && (
+        <footer className="bg-forest-dark py-12 border-t border-gold/10">
+          <div className="max-w-7xl mx-auto px-6 grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div>
+              <div className="font-display text-2xl text-gold font-bold mb-4">
+                EINSTEIN
+              </div>
+              <p className="text-offwhite-dim text-sm">
+                Место, где пьют великие умы. Премиальный паб, в котором
+                крафтовая культура встречается с элегантностью.
+              </p>
             </div>
-            <p className="text-offwhite-dim text-sm">
-              Место, где пьют великие умы. Премиальный паб, в котором
-              крафтовая культура встречается с элегантностью.
-            </p>
+            <div>
+              <h4 className="font-bold mb-4">Адрес</h4>
+              <a
+                href={mapLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-offwhite-dim text-sm flex items-start gap-2 mb-2 hover:text-gold transition-colors"
+              >
+                <MapPin size={16} className="shrink-0 mt-0.5" />
+                <span>
+                  {address.street},{" "}
+                  <span className="whitespace-nowrap">{address.city}</span>
+                </span>
+              </a>
+              <a
+                href={phone.href}
+                className="text-offwhite-dim text-sm flex items-center gap-2 hover:text-gold transition-colors"
+              >
+                <Phone size={16} className="shrink-0" />
+                {phone.label}
+              </a>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4">Часы работы</h4>
+              <div className="space-y-2">
+                {openingHours.map(({ days, time }) => (
+                  <p key={days} className="text-offwhite-dim text-sm">
+                    {days}: {time}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div>
+              <h4 className="font-bold mb-4">Мы в соцсетях</h4>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 text-gold">
+                {socialLinks.map(({ name, href, icon: Icon }) => (
+                  <a
+                    key={name}
+                    href={href}
+                    className="flex items-center gap-2 hover:text-offwhite transition-colors"
+                  >
+                    <Icon size={16} />
+                    {name}
+                  </a>
+                ))}
+              </div>
+            </div>
           </div>
-          <div>
-            <h4 className="font-bold mb-4">Адрес</h4>
-            <a
-              href={mapLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-offwhite-dim text-sm flex items-start gap-2 mb-2 hover:text-gold transition-colors"
+          <div className="max-w-7xl mx-auto px-6 mt-8">
+            <Link
+              to="/privacy"
+              className="text-offwhite-dim text-xs hover:text-gold transition-colors"
             >
-              <MapPin size={16} className="shrink-0 mt-0.5" />
-              <span>
-                {address.street},{" "}
-                <span className="whitespace-nowrap">{address.city}</span>
-              </span>
-            </a>
-            <a
-              href={phone.href}
-              className="text-offwhite-dim text-sm flex items-center gap-2 hover:text-gold transition-colors"
-            >
-              <Phone size={16} className="shrink-0" />
-              {phone.label}
-            </a>
+              Политика конфиденциальности
+            </Link>
           </div>
-          <div>
-            <h4 className="font-bold mb-4">Часы работы</h4>
-            <div className="space-y-2">
-              {openingHours.map(({ days, time }) => (
-                <p key={days} className="text-offwhite-dim text-sm">
-                  {days}: {time}
-                </p>
-              ))}
-            </div>
-          </div>
-          <div>
-            <h4 className="font-bold mb-4">Мы в соцсетях</h4>
-            <div className="flex flex-wrap gap-x-4 gap-y-2 text-gold">
-              {socialLinks.map(({ name, href, icon: Icon }) => (
-                <a
-                  key={name}
-                  href={href}
-                  className="flex items-center gap-2 hover:text-offwhite transition-colors"
-                >
-                  <Icon size={16} />
-                  {name}
-                </a>
-              ))}
-            </div>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto px-6 mt-8">
-          <Link
-            to="/privacy"
-            className="text-offwhite-dim text-xs hover:text-gold transition-colors"
-          >
-            Политика конфиденциальности
-          </Link>
-        </div>
-      </footer>
+        </footer>
+      )}
+    </>
+  )
+}
+
+export default function App() {
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    // Simulate preloader
+    const timer = setTimeout(() => setLoading(false), 2000)
+    return () => clearTimeout(timer)
+  }, [])
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-forest flex items-center justify-center z-50">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="text-gold font-display text-6xl font-black tracking-widest relative"
+        >
+          EINSTEIN
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: "100%" }}
+            transition={{ duration: 1.5, delay: 0.5 }}
+            className="absolute -bottom-2 left-0 h-1 bg-gold"
+          />
+        </motion.div>
+      </div>
+    )
+  }
+
+  return (
+    <BrowserRouter>
+      <ScrollToTop />
+      <AppShell />
     </BrowserRouter>
   )
 }

@@ -43,7 +43,7 @@ export type BookingRequest = {
 
 // 1290 -> "1 290 ₽"
 export function formatPrice(price: number) {
-  return `${price.toLocaleString("ru-RU")} ₽`
+  return `${price.toLocaleString("ru-RU")} ₽`
 }
 
 // "2026-10-15T19:00:00+03:00" -> "15 октября в 19:00", in the pub's time zone
@@ -57,21 +57,43 @@ export function formatEventDate(value: string) {
   })
 }
 
-// Loads a GET endpoint: data is null while loading, failed is true if it failed
+// Loads a GET endpoint. `loading` is true while the request is in flight,
+// `failed` becomes true on error. On path change, previous state resets.
 export function useApi<T>(path: string) {
   const [data, setData] = useState<T | null>(null)
+  const [loading, setLoading] = useState(true)
   const [failed, setFailed] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+    setLoading(true)
+    setFailed(false)
+    setData(null)
+
     fetch(path)
       .then((res) => {
         if (!res.ok) throw new Error(`HTTP ${res.status}`)
         return res.json()
       })
-      .then(setData, () => setFailed(true))
+      .then(
+        (json) => {
+          if (cancelled) return
+          setData(json)
+          setLoading(false)
+        },
+        () => {
+          if (cancelled) return
+          setFailed(true)
+          setLoading(false)
+        },
+      )
+
+    return () => {
+      cancelled = true
+    }
   }, [path])
 
-  return { data, failed }
+  return { data, loading, failed }
 }
 
 // Sends a booking request; on failure throws an Error whose message can be shown to the guest

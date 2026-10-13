@@ -31,9 +31,8 @@ export function Contacts() {
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="lg:col-span-3 relative h-[400px] lg:h-auto rounded-xl overflow-hidden group"
+          className="lg:col-span-3 relative h-[400px] lg:h-auto rounded-xl overflow-hidden"
         >
-          <div className="absolute inset-0 bg-forest/40 mix-blend-multiply z-10 pointer-events-none group-hover:bg-forest/20 transition-colors duration-500" />
           <iframe
             src={mapEmbedUrl}
             title={`Карта: ${address.street}, ${address.city}`}
@@ -41,8 +40,9 @@ export function Contacts() {
             height="100%"
             style={{
               border: 0,
-              filter:
-                "grayscale(1) contrast(1.2) brightness(0.8) sepia(0.8) hue-rotate(100deg)",
+              // Приглушённая светлая карта: чуть темнее, менее контрастная,
+              // менее насыщенная — в тон тёмному сайту, но без инверсии.
+              filter: "brightness(0.9) contrast(1.05) saturate(0.7)",
             }}
             allowFullScreen={false}
             loading="lazy"
@@ -114,6 +114,8 @@ export function Contacts() {
                 <a
                   key={name}
                   href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   aria-label={name}
                   title={name}
                   className="w-12 h-12 rounded-full border border-gold/30 flex items-center justify-center text-gold hover:bg-gold hover:text-forest-dark transition-all duration-300"

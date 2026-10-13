@@ -27,6 +27,7 @@ export function EventCard({
           <img
             src={event.image}
             alt={event.title}
+            loading="lazy"
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
           />
         </div>
@@ -55,7 +56,7 @@ export function EventCard({
 }
 
 export function Events() {
-  const { data: events, failed } = useApi<PubEvent[]>("/api/events/")
+  const { data: events, loading, failed } = useApi<PubEvent[]>("/api/events/")
 
   return (
     <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto min-h-screen">
@@ -72,10 +73,10 @@ export function Events() {
         </p>
       </motion.div>
 
-      {!events && !failed && (
+      {loading && (
         <Loader2 className="mx-auto text-gold animate-spin" size={32} />
       )}
-      {(failed || events?.length === 0) && (
+      {!loading && (failed || events?.length === 0) && (
         <p className="text-center text-offwhite-dim">
           {failed
             ? "Не удалось загрузить события. Попробуйте обновить страницу."

@@ -196,3 +196,10 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
 }
+
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8443",
+    "https://localhost:8443",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
+]

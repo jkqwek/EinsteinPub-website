@@ -4,7 +4,7 @@
 export const enabledSections = {
   menu: true,
   events: true,
-  gallery: false,
+  gallery: true,
   booking: true,
   contacts: true,
 }

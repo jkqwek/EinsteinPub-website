@@ -4,11 +4,12 @@ import tailwindcss from "@tailwindcss/vite"
 import path from "node:path"
 
 // Django (backend/) runs on :8000; dev and preview forward its paths to it:
-// the API, the admin with its static files, and uploaded photos
+// the API, static files, and uploaded photos.
+// NOTE: "/admin" is NOT proxied — that path is the React admin SPA.
+// Django's own admin is reachable directly at http://localhost:8000/admin/
 const django = "http://localhost:8000"
 const proxy = {
   "/api": django,
-  "/admin": django,
   "/static": django,
   "/media": django,
 }
