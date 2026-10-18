@@ -13,16 +13,18 @@ import {
   MapPin,
   Phone,
   ArrowRight,
-  Loader2,
 } from "lucide-react"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 
+// --- Импорт страниц ---
 import { Booking } from "./pages/Booking"
 import { Gallery } from "./pages/Gallery"
 import { Contacts } from "./pages/Contacts"
 import { EventCard, Events } from "./pages/Events"
 import { Privacy } from "./pages/Privacy"
+import { Menu } from "./pages/Menu" // 👈 Импортируем новую страницу меню
+
 import { AdminLogin } from "./admin/Login"
 import { AdminLayout } from "./admin/AdminLayout"
 import { AdminEvents } from "./admin/Events"
@@ -41,13 +43,10 @@ import {
 } from "./siteInfo"
 import { enabledSections } from "./sections"
 import {
-  formatPrice,
   useApi,
-  type MenuCategory,
   type PubEvent,
 } from "./api"
 
-import menuHero from "./assets/menu-hero.webp"
 import heroBg from "./assets/hero-bg.png" 
 import logo from "./assets/logo.png"
 
@@ -83,11 +82,7 @@ function Navbar() {
     <>
       <nav className="fixed top-0 w-full z-50 glassmorphism border-0 border-b border-gold/10">
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-          <Link
-            to="/"
-            className="flex items-center gap-4 group"
-          >
-            {/* 👇 Добавлена обводка (4 тени без размытия) */}
+          <Link to="/" className="flex items-center gap-4 group">
             <img
               src={logo}
               alt="Einstein Logo"
@@ -176,7 +171,7 @@ function Navbar() {
   )
 }
 
-// --- Pages ---
+// --- Components ---
 function HeroStat({
   value,
   label,
@@ -385,127 +380,7 @@ function Home() {
   )
 }
 
-function Menu() {
-  const [activeTab, setActiveTab] = useState("All")
-  const { data: menu, loading, failed } = useApi<MenuCategory[]>("/api/menu/")
-  const categories = (menu ?? []).filter((c) => c.dishes.length > 0)
-
-  const tabs = [
-    { id: "All", label: "Все" },
-    ...categories.map((c) => ({ id: c.slug, label: c.name })),
-  ]
-
-  const filtered = categories
-    .filter((c) => activeTab === "All" || c.slug === activeTab)
-    .flatMap((c) => c.dishes.map((dish) => ({ ...dish, category: c.name })))
-
-  return (
-    <div className="relative min-h-screen">
-      <div className="absolute inset-x-0 top-0 h-screen overflow-hidden">
-        <img
-          src={menuHero}
-          alt=""
-          className="w-full h-full object-cover opacity-30"
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-burgundy/40 via-forest/50 to-forest" />
-      </div>
-      <div className="relative pt-32 pb-24 px-6 max-w-7xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
-        >
-          <h1 className="text-4xl md:text-6xl font-display text-gold mb-4">
-            НАШЕ МЕНЮ
-          </h1>
-          <p className="text-offwhite-dim">
-            Тщательно подобранные позиции для взыскательного вкуса.
-          </p>
-        </motion.div>
-
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={cn(
-                "px-6 py-2 rounded-full text-sm font-bold uppercase transition-all duration-300",
-                activeTab === tab.id
-                  ? "bg-gold text-forest-dark shadow-[0_0_15px_rgba(250,188,85,0.3)]"
-                  : "glassmorphism text-offwhite hover:text-gold",
-              )}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
-
-        {loading && (
-          <Loader2 className="mx-auto text-gold animate-spin" size={32} />
-        )}
-        {!loading && (failed || (menu && filtered.length === 0)) && (
-          <p className="text-center text-offwhite-dim">
-            {failed
-              ? "Не удалось загрузить меню. Попробуйте обновить страницу."
-              : "В этом разделе пока пусто."}
-          </p>
-        )}
-
-        <motion.div
-          layout
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          <AnimatePresence mode="popLayout">
-            {filtered.map((item) => (
-              <motion.div
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.3 }}
-                key={item.id}
-                className="glassmorphism rounded-xl overflow-hidden flex flex-col group cursor-pointer border border-transparent hover:border-gold/50 hover:shadow-[0_12px_40px_-8px_rgba(97,24,32,0.7)] transition-[border-color,box-shadow] duration-300"
-              >
-                {item.image && (
-                  <div className="relative aspect-[4/3] overflow-hidden">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                    />
-                    <span className="absolute top-3 left-3 bg-burgundy text-gold-light text-xs font-bold uppercase tracking-wide px-2.5 py-1 rounded-sm">
-                      {item.category}
-                    </span>
-                  </div>
-                )}
-                <div className="flex-1 p-6 flex flex-col border-t-4 border-gold">
-                  <div className="flex justify-between items-start gap-3 mb-2">
-                    <h3 className="min-w-0 break-words hyphens-auto font-display font-bold text-xl group-hover:text-gold transition-colors">
-                      {item.name}
-                    </h3>
-                    <span className="shrink-0 whitespace-nowrap text-gold font-display font-bold text-lg">
-                      {formatPrice(item.price)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-12 h-1 bg-gold rounded-full" />
-                    {item.weight && (
-                      <span className="text-sm font-semibold tracking-wide text-offwhite-dim">
-                        {item.weight}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-offwhite-dim">{item.description}</p>
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-    </div>
-  )
-}
-
+// Simple placeholders for other pages
 function Placeholder({ title }: { title: string }) {
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen flex flex-col items-center justify-center text-center">
@@ -598,6 +473,7 @@ function AppShell() {
         />
         <Route path="/privacy" element={<Privacy />} />
 
+        {/* Админка сайта */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminEvents />} />
