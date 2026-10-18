@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import {
   BrowserRouter,
   Routes,
@@ -16,8 +16,6 @@ import {
   Loader2,
 } from "lucide-react"
 import { clsx, type ClassValue } from "clsx"
-import { useRef } from "react"
-import { OpenStatus } from "./components/OpenStatus"
 import { twMerge } from "tailwind-merge"
 
 import { Booking } from "./pages/Booking"
@@ -31,6 +29,8 @@ import { AdminEvents } from "./admin/Events"
 import { AdminMenu } from "./admin/Menu"
 import { AdminGallery } from "./admin/Gallery"
 import { AdminBookings } from "./admin/Bookings"
+import { OpenStatus } from "./components/OpenStatus"
+
 import {
   address,
   heroStats,
@@ -46,7 +46,10 @@ import {
   type MenuCategory,
   type PubEvent,
 } from "./api"
+
 import menuHero from "./assets/menu-hero.webp"
+import heroBg from "./assets/hero-bg.png" 
+import logo from "./assets/logo.png"
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -82,9 +85,17 @@ function Navbar() {
         <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
           <Link
             to="/"
-            className="font-display text-2xl tracking-wider text-gold font-bold"
+            className="flex items-center gap-4 group"
           >
-            EINSTEIN
+            {/* 👇 Добавлена обводка (4 тени без размытия) */}
+            <img
+              src={logo}
+              alt="Einstein Logo"
+              className="h-11 w-auto object-contain transition-transform group-hover:scale-105 drop-shadow-[1px_0_0_#fabc55] drop-shadow-[-1px_0_0_#fabc55] drop-shadow-[0_1px_0_#fabc55] drop-shadow-[0_-1px_0_#fabc55]"
+            />
+            <span className="font-display text-2xl tracking-wider text-gold font-bold">
+              EINSTEIN
+            </span>
           </Link>
 
           <div className="hidden lg:flex items-center gap-6 xl:gap-8">
@@ -195,7 +206,6 @@ function HeroStat({
       else setDisplay(value)
     }
 
-    // Запускаем, когда блок попал в поле зрения
     const el = ref.current
     const observer = new IntersectionObserver(
       (entries) => {
@@ -219,12 +229,12 @@ function HeroStat({
 
   return (
     <div ref={ref} className="text-center">
-      <div className="text-3xl md:text-4xl font-display text-gold tabular-nums">
+      <div className="text-3xl md:text-4xl font-display text-gold tabular-nums drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
         {prefix}
         {formatted}
         {suffix}
       </div>
-      <div className="text-xs md:text-sm text-offwhite-dim uppercase tracking-wider mt-1">
+      <div className="text-xs md:text-sm text-offwhite uppercase tracking-wider mt-1 drop-shadow-[0_1px_3px_rgba(0,0,0,0.8)]">
         {label}
       </div>
     </div>
@@ -234,7 +244,6 @@ function HeroStat({
 function Home() {
   const { data: events } = useApi<PubEvent[]>("/api/events/?limit=3")
 
-  // Ротация подзаголовка
   const subtitles = [
     "Крафтовое пиво",
     "Изысканные вина",
@@ -257,28 +266,27 @@ function Home() {
       <section className="h-screen relative flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img
-            src="https://images.unsplash.com/photo-1514933651103-005eec06c04b?auto=format&fit=crop&q=80&w=2000"
+            src={heroBg}
             alt="Интерьер паба"
-            className="w-full h-full object-cover opacity-30"
+            className="w-full h-full object-cover opacity-80"
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-burgundy/40 via-forest/50 to-forest"></div>
+          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-forest"></div>
         </div>
 
-        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+        <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-10">
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-5xl md:text-7xl lg:text-8xl font-display font-black mb-6 leading-tight"
+            className="text-5xl md:text-7xl lg:text-8xl font-display font-black mb-6 leading-tight text-offwhite drop-shadow-[0_4px_12px_rgba(0,0,0,0.9)]"
           >
             ГДЕ ПЬЮТ
             <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold to-gold-light shimmer">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold to-gold-light shimmer drop-shadow-none">
               ВЕЛИКИЕ УМЫ
             </span>
           </motion.h1>
 
-          {/* Ротация подзаголовка */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -293,7 +301,7 @@ function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -16 }}
                 transition={{ duration: 0.45, ease: "easeOut" }}
-                className="absolute inset-0 font-display text-2xl md:text-3xl tracking-wide text-gold-light text-center"
+                className="absolute inset-0 font-display text-2xl md:text-3xl tracking-wide text-gold-light text-center drop-shadow-[0_2px_6px_rgba(0,0,0,0.9)]"
               >
                 {subtitles[subIndex]}
               </motion.p>
@@ -308,20 +316,19 @@ function Home() {
           >
             <Link
               to="/menu"
-              className="px-8 py-3 border border-gold text-gold font-bold uppercase text-sm rounded-sm hover:bg-gold/10 transition-colors w-full sm:w-auto"
+              className="px-8 py-3 border border-gold text-gold font-bold uppercase text-sm rounded-sm hover:bg-gold/20 transition-colors w-full sm:w-auto backdrop-blur-md bg-black/20"
             >
               Смотреть меню
             </Link>
             <Link
               to="/booking"
-              className="px-8 py-3 bg-gold text-forest-dark font-bold uppercase text-sm rounded-sm hover:bg-gold-light transition-colors shadow-[0_0_15px_rgba(250,188,85,0.2)] hover:shadow-[0_0_25px_rgba(250,188,85,0.4)] w-full sm:w-auto"
+              className="px-8 py-3 bg-gold text-forest-dark font-bold uppercase text-sm rounded-sm hover:bg-gold-light transition-colors shadow-[0_0_20px_rgba(250,188,85,0.4)] w-full sm:w-auto"
             >
               Забронировать стол
             </Link>
           </motion.div>
         </div>
 
-        {/* Stats внизу hero */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -343,7 +350,6 @@ function Home() {
         </motion.div>
       </section>
 
-      {/* Hidden until there is at least one upcoming event */}
       {enabledSections.events && events && events.length > 0 && (
         <section className="py-24 px-6 max-w-7xl mx-auto">
           <motion.div
@@ -500,7 +506,6 @@ function Menu() {
   )
 }
 
-// Simple placeholders for other pages
 function Placeholder({ title }: { title: string }) {
   return (
     <div className="pt-32 pb-24 px-6 min-h-screen flex flex-col items-center justify-center text-center">
@@ -539,8 +544,6 @@ function NotFound() {
   )
 }
 
-// Всё, что под <BrowserRouter>: навбар, роуты, футер.
-// На /admin/* прячем публичные навбар и футер — там своя оболочка.
 function AppShell() {
   const { pathname } = useLocation()
   const isAdmin = pathname.startsWith("/admin")
@@ -595,7 +598,6 @@ function AppShell() {
         />
         <Route path="/privacy" element={<Privacy />} />
 
-        {/* Админка сайта */}
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin" element={<AdminLayout />}>
           <Route index element={<AdminEvents />} />
@@ -642,16 +644,16 @@ function AppShell() {
                 {phone.label}
               </a>
             </div>
-              <div>
-                <h4 className="font-bold mb-4">Часы работы</h4>
-                <div className="space-y-2 mb-3">
-                  {openingHours.map(({ days, time }) => (
-                    <p key={days} className="text-offwhite-dim text-sm">
-                      {days}: {time}
-                    </p>
-                  ))}
-                </div>
-                <OpenStatus />
+            <div>
+              <h4 className="font-bold mb-4">Часы работы</h4>
+              <div className="space-y-2 mb-3">
+                {openingHours.map(({ days, time }) => (
+                  <p key={days} className="text-offwhite-dim text-sm">
+                    {days}: {time}
+                  </p>
+                ))}
+              </div>
+              <OpenStatus />
             </div>
             <div>
               <h4 className="font-bold mb-4">Мы в соцсетях</h4>
@@ -660,6 +662,8 @@ function AppShell() {
                   <a
                     key={name}
                     href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex items-center gap-2 hover:text-offwhite transition-colors"
                   >
                     <Icon size={16} />
@@ -687,7 +691,6 @@ export default function App() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Simulate preloader
     const timer = setTimeout(() => setLoading(false), 2000)
     return () => clearTimeout(timer)
   }, [])
