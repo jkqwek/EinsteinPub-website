@@ -23,6 +23,7 @@ Run from `frontend/`:
 - `src/pages/` - Booking, Events (plus the event card used on Home), Gallery, Contacts and Privacy (privacy policy template, linked from the booking form) pages
 - `src/api.ts` - API types, `useApi` hook for GET endpoints, `createBooking`, price and event date formatting
 - `src/components/SocialIcons.tsx` - VK and Telegram logos
+- `src/components/FormulaBackdrop.tsx` - page background with the gold grid and formulas, shared by Events and Gallery (Gallery passes its own optics formulas)
 - `src/siteInfo.ts` - address, phone, opening hours, map and social links shared by the footer and the Contacts page
 - `src/sections.ts` - flags that publish or hide sections; a hidden section keeps its nav link but renders the placeholder
 - `src/index.css` - Tailwind import, theme colors and fonts, custom utilities and keyframes

@@ -46,9 +46,10 @@ export function Menu() {
         <img
           src={menuHero}
           alt=""
-          className="w-full h-full object-cover opacity-80"
+          className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-forest" />
+        {/* Neutral shading; only the last strip fades into the page, since dish cards scroll over the photo's edge */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 via-85% to-forest" />
       </div>
 
       <div className="relative pt-32 pb-24 px-6 max-w-7xl mx-auto">

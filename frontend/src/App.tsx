@@ -199,10 +199,10 @@ function Home() {
     <div className="min-h-screen">
       <section className="h-screen relative flex items-center justify-center overflow-hidden">
         
-        {/* 👇 ФОН ВЕРНУЛСЯ В ИСХОДНОЕ СОСТОЯНИЕ БЕЗ ЛИШНИХ СВЕЧЕНИЙ */}
+        {/* Photo at full strength, no green tint; neutral shading keeps the navbar, headline and stats readable */}
         <div className="absolute inset-0 z-0">
-          <img src={heroBg} alt="Интерьер паба" className="w-full h-full object-cover opacity-80" />
-          <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-black/20 to-forest"></div>
+          <img src={heroBg} alt="Интерьер паба" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/25 to-black/70"></div>
         </div>
 
         <div className="relative z-10 text-center px-4 max-w-4xl mx-auto mt-10">

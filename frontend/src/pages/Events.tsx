@@ -1,6 +1,7 @@
 import { motion } from "framer-motion"
 import { Loader2, Clock, CalendarX } from "lucide-react"
 import { formatEventDate, useApi, type PubEvent } from "../api"
+import { FormulaBackdrop } from "../components/FormulaBackdrop"
 
 export function EventCard({ 
   event, 
@@ -75,27 +76,7 @@ export function Events() {
   ) || []
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#0f2118] to-forest">
-      
-      <div
-        className="absolute inset-0 opacity-40 pointer-events-none"
-        style={{
-          backgroundImage: `
-            linear-gradient(to right, rgba(250,188,85,0.06) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(250,188,85,0.06) 1px, transparent 1px)
-          `,
-          backgroundSize: '40px 40px'
-        }}
-      />
-
-      <div
-        className="absolute inset-0 opacity-[0.04] pointer-events-none mix-blend-screen"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='300' height='300' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='20' y='50' font-family='serif' font-size='40' fill='%23fabc55' transform='rotate(-15 20 50)'%3EE=mc%C2%B2%3C/text%3E%3Ctext x='150' y='120' font-family='serif' font-size='60' fill='%23fabc55' transform='rotate(10 150 120)'%3E%E2%88%91%3C/text%3E%3Ctext x='200' y='40' font-family='serif' font-size='35' fill='%23fabc55' transform='rotate(25 200 40)'%3E%CF%80r%C2%B2%3C/text%3E%3Ctext x='40' y='220' font-family='serif' font-size='50' fill='%23fabc55' transform='rotate(-5 40 220)'%3E%E2%88%AB%3C/text%3E%3Ctext x='180' y='260' font-family='serif' font-size='25' fill='%23fabc55' transform='rotate(15 180 260)'%3E%E2%88%9A-1%3C/text%3E%3C/svg%3E")`,
-          backgroundSize: '350px 350px'
-        }}
-      />
-
+    <FormulaBackdrop>
       <div className="relative pt-32 pb-24 px-6 max-w-6xl mx-auto z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -154,6 +135,6 @@ export function Events() {
           </div>
         )}
       </div>
-    </div>
+    </FormulaBackdrop>
   )
 }
