@@ -10,6 +10,13 @@ TIME_SLOTS = ["17:00", "18:00", "19:00", "20:00", "21:00", "22:00"]
 MAX_DAYS_AHEAD = 60
 
 
+def clean_phone(value):
+    """10–15 цифр; +, скобки, пробелы и дефисы не считаются. Общая для брони и откликов."""
+    if not 10 <= len(re.sub(r"\D", "", value)) <= 15:
+        raise serializers.ValidationError("Проверьте номер телефона.")
+    return value
+
+
 class BookingSerializer(serializers.ModelSerializer):
     """Публичная заявка с сайта."""
     consent = serializers.BooleanField(write_only=True)
@@ -19,9 +26,7 @@ class BookingSerializer(serializers.ModelSerializer):
         fields = ["name", "phone", "guests", "date", "time", "wishes", "consent"]
 
     def validate_phone(self, value):
-        if not 10 <= len(re.sub(r"\D", "", value)) <= 15:
-            raise serializers.ValidationError("Проверьте номер телефона.")
-        return value
+        return clean_phone(value)
 
     def validate_consent(self, value):
         if not value:

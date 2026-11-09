@@ -20,7 +20,8 @@ Run from `frontend/`:
 - `index.html` - HTML shell: language, page title, meta description; loads `src/main.tsx`
 - `src/main.tsx` - React entrypoint; imports `src/index.css` and mounts `src/App.tsx` into `#root`
 - `src/App.tsx` - router, navbar, footer, Home and Menu pages, "coming soon" and 404 placeholders
-- `src/pages/` - Booking, Events (plus the event card used on Home), Gallery, Contacts and Privacy (privacy policy template, linked from the booking form) pages
+- `src/pages/` - Booking, Events (plus the event card used on Home), Gallery, Vacancies (open vacancies and the resume form, linked from the footer), Contacts and Privacy (privacy policy template, linked from the booking and resume forms) pages
+- `src/admin/` - admin panel at `/admin`; Vacancies and Applications are shown only when `/api/auth/me/` returns `can_hire`
 - `src/api.ts` - API types, `useApi` hook for GET endpoints, `createBooking`, price and event date formatting
 - `src/components/SocialIcons.tsx` - VK and Telegram logos
 - `src/components/FormulaBackdrop.tsx` - page background with the gold grid and formulas, shared by Events and Gallery (Gallery passes its own optics formulas)

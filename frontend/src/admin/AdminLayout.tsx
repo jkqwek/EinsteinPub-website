@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { NavLink, Outlet, useNavigate } from "react-router-dom"
 import {
   CalendarDays,
@@ -7,27 +7,40 @@ import {
   Images,
   ClipboardList,
   ExternalLink,
+  Briefcase,
+  FileText,
 } from "lucide-react"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
-import { isAuthed, logout } from "./api"
+import { adminFetch, isAuthed, logout } from "./api"
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
+// hiring: only for administrators (can_hire from /api/auth/me/), the API enforces it too
 const navItems = [
   { to: "/admin/events", label: "События", icon: CalendarDays },
   { to: "/admin/menu", label: "Меню", icon: MenuIcon },
   { to: "/admin/gallery", label: "Галерея", icon: Images },
   { to: "/admin/bookings", label: "Брони", icon: ClipboardList },
+  { to: "/admin/vacancies", label: "Вакансии", icon: Briefcase, hiring: true },
+  { to: "/admin/applications", label: "Отклики", icon: FileText, hiring: true },
 ]
 
 export function AdminLayout() {
   const navigate = useNavigate()
+  const [canHire, setCanHire] = useState(false)
 
   useEffect(() => {
-    if (!isAuthed()) navigate("/admin/login", { replace: true })
+    if (!isAuthed()) {
+      navigate("/admin/login", { replace: true })
+      return
+    }
+    adminFetch("/api/auth/me/")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((me) => setCanHire(Boolean(me?.can_hire)))
+      .catch(() => {}) // an expired session is handled by the section pages
   }, [navigate])
 
   function onLogout() {
@@ -44,7 +57,7 @@ export function AdminLayout() {
         </div>
 
         <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-          {navItems.map(({ to, label, icon: Icon }) => (
+          {navItems.filter((item) => !item.hiring || canHire).map(({ to, label, icon: Icon }) => (
             <NavLink
               key={to}
               to={to}

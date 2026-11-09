@@ -44,3 +44,5 @@ desktop.ini
 
 # Backend: photos uploaded through the Django admin
 backend/media/
+# Backend: applicants' resumes (personal data)
+backend/private_media/

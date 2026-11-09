@@ -12,6 +12,15 @@ from apps.bookings.views import (
     AdminBookingListView,
     BookingCreateView,
 )
+from apps.careers.views import (
+    ApplicationAdminDetailView,
+    ApplicationAdminListView,
+    ApplicationCreateView,
+    ResumeDownloadView,
+    VacancyAdminDetailView,
+    VacancyAdminListCreateView,
+    VacancyListView,
+)
 from apps.events.views import (
     EventAdminDetailView,
     EventAdminListCreateView,
@@ -29,6 +38,7 @@ from apps.menu.views import (
     AdminDishListCreateView,
     MenuView,
 )
+from apps.users.views import MeView
 
 admin.site.site_header = "Einstein Pub"
 admin.site.site_title = "Einstein Pub"
@@ -42,10 +52,13 @@ urlpatterns = [
     path("api/events/", EventListView.as_view()),
     path("api/gallery/", PhotoListView.as_view()),
     path("api/bookings/", BookingCreateView.as_view()),
+    path("api/vacancies/", VacancyListView.as_view()),
+    path("api/applications/", ApplicationCreateView.as_view()),
 
     # Авторизация для админки сайта
     path("api/auth/token/", TokenObtainPairView.as_view()),
     path("api/auth/token/refresh/", TokenRefreshView.as_view()),
+    path("api/auth/me/", MeView.as_view()),
 
     # Админ: события
     path("api/admin/events/", EventAdminListCreateView.as_view()),
@@ -64,4 +77,11 @@ urlpatterns = [
     # Админ: брони
     path("api/admin/bookings/", AdminBookingListView.as_view()),
     path("api/admin/bookings/<int:pk>/", AdminBookingDetailView.as_view()),
+
+    # Админ: вакансии и отклики (только администраторы)
+    path("api/admin/vacancies/", VacancyAdminListCreateView.as_view()),
+    path("api/admin/vacancies/<int:pk>/", VacancyAdminDetailView.as_view()),
+    path("api/admin/applications/", ApplicationAdminListView.as_view()),
+    path("api/admin/applications/<int:pk>/", ApplicationAdminDetailView.as_view()),
+    path("api/admin/applications/<int:pk>/resume/", ResumeDownloadView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

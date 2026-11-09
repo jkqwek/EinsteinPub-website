@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     "apps.events",
     "apps.gallery",
     "apps.bookings",
+    "apps.careers",
 ]
 
 MIDDLEWARE = [
@@ -151,6 +152,8 @@ TIME_ZONE = "Europe/Moscow"
 # Медиа
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+# Резюме соискателей: вне MEDIA_ROOT, наружу не раздаётся (apps/careers/models.py)
+PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
 
 # DRF
 REST_FRAMEWORK = {
@@ -166,8 +169,8 @@ REST_FRAMEWORK = {
         "rest_framework.filters.OrderingFilter",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    # Заявки на бронь с одного IP (apps/bookings/views.py)
-    "DEFAULT_THROTTLE_RATES": {"bookings": "5/hour"},
+    # Заявки на бронь и отклики на вакансии с одного IP (apps/bookings/views.py, apps/careers/views.py)
+    "DEFAULT_THROTTLE_RATES": {"bookings": "5/hour", "applications": "3/hour"},
     # Сколько прокси перед Django: 0 — брать IP соединения, за nginx — 1.
     # Иначе все гости за nginx делят один лимит, а заголовок X-Forwarded-For можно подделать
     "NUM_PROXIES": config("NUM_PROXIES", default=0, cast=int),

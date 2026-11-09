@@ -7,4 +7,5 @@ export const enabledSections = {
   gallery: true,
   booking: true,
   contacts: true,
+  vacancies: true, // footer link and /vacancies; hide when the pub isn't hiring
 }

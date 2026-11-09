@@ -31,6 +31,14 @@ export type Photo = {
   caption: string
 }
 
+export type Vacancy = {
+  id: number
+  title: string
+  description: string
+  schedule: string // "" when not set
+  salary: string // free text, "" when not set
+}
+
 export type BookingRequest = {
   name: string
   phone: string
@@ -97,17 +105,30 @@ export function useApi<T>(path: string) {
 }
 
 // Sends a booking request; on failure throws an Error whose message can be shown to the guest
-export async function createBooking(booking: BookingRequest) {
-  const res = await fetch("/api/bookings/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(booking),
-  }).catch(() => {
+export function createBooking(booking: BookingRequest) {
+  return postForm(
+    "/api/bookings/",
+    { headers: { "Content-Type": "application/json" }, body: JSON.stringify(booking) },
+    "Слишком много заявок. Попробуйте позже или позвоните нам.",
+  )
+}
+
+// Sends a job application as multipart: vacancy (id, omitted for "any"), name, phone, email,
+// about, resume (file), adult, consent. Errors are thrown like in createBooking
+export function createApplication(form: FormData) {
+  return postForm(
+    "/api/applications/",
+    { body: form },
+    "Слишком много откликов. Попробуйте позже или позвоните нам.",
+  )
+}
+
+async function postForm(path: string, init: RequestInit, tooManyMessage: string) {
+  const res = await fetch(path, { method: "POST", ...init }).catch(() => {
     throw new Error("Нет связи с сервером. Проверьте интернет и попробуйте ещё раз.")
   })
   if (res.ok) return
-  if (res.status === 429)
-    throw new Error("Слишком много заявок. Попробуйте позже или позвоните нам.")
+  if (res.status === 429) throw new Error(tooManyMessage)
   // Validation errors look like { "phone": ["Проверьте номер телефона."] }
   const errors = await res.json().catch(() => ({}))
   const [message] = Object.values(errors).flat()

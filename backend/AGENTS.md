@@ -13,7 +13,7 @@ Run from `backend/`:
 - `python manage.py createsuperuser` - the first admin account
 - `python manage.py runserver` - http://localhost:8000; the frontend dev server (http://localhost:8443) proxies `/api`, `/admin`, `/static` and `/media` here, so open the site and the admin through :8443
 
-Staff accounts: create a user in the admin, tick "Статус персонала" and add them to the "Персонал" group (menu, events, gallery and bookings, no access to users).
+Staff accounts: create a user in the admin, tick "Статус персонала" and add them to the "Персонал" group (menu, events, gallery and bookings, no access to users). Vacancies and applications (resumes) are visible only to superusers and users with the "Администратор" flag.
 
 ## Project Structure
 
@@ -24,4 +24,5 @@ Staff accounts: create a user in the admin, tick "Статус персонал�
 - `apps/events/` - `Event`; `GET /api/events/` returns published events from today on
 - `apps/gallery/` - `Photo`; `GET /api/gallery/`
 - `apps/bookings/` - `Booking`; `POST /api/bookings/` validates time slots and dates (kept in sync with `frontend/src/pages/Booking.tsx`), limited to 5 requests per hour per IP
-- `apps/users/` - custom `User`; migration `0002` creates the "Персонал" group
+- `apps/careers/` - `Vacancy` and `Application`; `GET /api/vacancies/` returns open vacancies, `POST /api/applications/` takes a multipart application (resume PDF/DOC/DOCX up to 5 MB, checked by file signature), limited to 3 requests per hour per IP. Resumes are stored in `private_media/` (outside `MEDIA_ROOT`, never served publicly) and downloaded only via `/api/admin/applications/<id>/resume/`. All `/api/admin/vacancies/` and `/api/admin/applications/` endpoints are for administrators only (`IsHiringAdmin`)
+- `apps/users/` - custom `User`; migration `0002` creates the "Персонал" group. `views.py`: `can_hire` / `IsHiringAdmin` (superuser or the "Администратор" flag, plus staff status) and `GET /api/auth/me/`, which the admin panel uses to show the hiring sections

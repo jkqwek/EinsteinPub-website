@@ -23,6 +23,7 @@ import { Contacts } from "./pages/Contacts"
 import { EventCard, Events } from "./pages/Events"
 import { Privacy } from "./pages/Privacy"
 import { Menu } from "./pages/Menu"
+import { Vacancies } from "./pages/Vacancies"
 
 import { AdminLogin } from "./admin/Login"
 import { AdminLayout } from "./admin/AdminLayout"
@@ -30,6 +31,8 @@ import { AdminEvents } from "./admin/Events"
 import { AdminMenu } from "./admin/Menu"
 import { AdminGallery } from "./admin/Gallery"
 import { AdminBookings } from "./admin/Bookings"
+import { AdminVacancies } from "./admin/Vacancies"
+import { AdminApplications } from "./admin/Applications"
 import { OpenStatus } from "./components/OpenStatus"
 
 import {
@@ -308,6 +311,7 @@ function AppShell() {
         <Route path="/gallery" element={enabledSections.gallery ? <Gallery /> : <Placeholder title="ГАЛЕРЕЯ" />} />
         <Route path="/booking" element={enabledSections.booking ? <Booking /> : <Placeholder title="БРОНЬ СТОЛА" />} />
         <Route path="/contacts" element={enabledSections.contacts ? <Contacts /> : <Placeholder title="КОНТАКТЫ" />} />
+        <Route path="/vacancies" element={enabledSections.vacancies ? <Vacancies /> : <Placeholder title="ВАКАНСИИ" />} />
         <Route path="/privacy" element={<Privacy />} />
 
         <Route path="/admin/login" element={<AdminLogin />} />
@@ -317,6 +321,8 @@ function AppShell() {
           <Route path="menu" element={<AdminMenu />} />
           <Route path="gallery" element={<AdminGallery />} />
           <Route path="bookings" element={<AdminBookings />} />
+          <Route path="vacancies" element={<AdminVacancies />} />
+          <Route path="applications" element={<AdminApplications />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
@@ -356,7 +362,10 @@ function AppShell() {
               </div>
             </div>
           </div>
-          <div className="max-w-7xl mx-auto px-6 mt-8">
+          <div className="max-w-7xl mx-auto px-6 mt-8 flex flex-wrap gap-x-6 gap-y-2">
+            {enabledSections.vacancies && (
+              <Link to="/vacancies" className="text-offwhite-dim text-xs hover:text-gold transition-colors">Вакансии</Link>
+            )}
             <Link to="/privacy" className="text-offwhite-dim text-xs hover:text-gold transition-colors">Политика конфиденциальности</Link>
           </div>
         </footer>
