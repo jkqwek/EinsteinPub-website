@@ -117,3 +117,8 @@ export const heroStats: {
   { value: 2013, label: "год основания", prefix: "с " },
   { value: 5, label: "рейтинг на Яндекс.Картах", decimals: 1, suffix: "★" },
 ]
+
+// Яндекс.Карты
+export const yandexOrgId = "1299566573"
+export const yandexReviewsWidgetUrl = `https://yandex.ru/maps-reviews-widget/${yandexOrgId}?comments`
+export const yandexOrgUrl = `https://yandex.ru/maps/org/eynshteyn/${yandexOrgId}/`

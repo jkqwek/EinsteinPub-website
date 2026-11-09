@@ -24,6 +24,7 @@ import { EventCard, Events } from "./pages/Events"
 import { Privacy } from "./pages/Privacy"
 import { Menu } from "./pages/Menu"
 import { Vacancies } from "./pages/Vacancies"
+import { YandexReviews } from "./components/YandexReviews"
 
 import { AdminLogin } from "./admin/Login"
 import { AdminLayout } from "./admin/AdminLayout"
@@ -268,6 +269,9 @@ function Home() {
           </div>
         </section>
       )}
+
+      {enabledSections.reviews && <YandexReviews />}
+
     </div>
   )
 }
