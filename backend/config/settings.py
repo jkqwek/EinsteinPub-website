@@ -150,7 +150,7 @@ LANGUAGE_CODE = "ru-ru"
 TIME_ZONE = "Europe/Moscow"
 
 # Медиа
-MEDIA_URL = "media/"
+MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 # Резюме соискателей: вне MEDIA_ROOT, наружу не раздаётся (apps/careers/models.py)
 PRIVATE_MEDIA_ROOT = BASE_DIR / "private_media"
