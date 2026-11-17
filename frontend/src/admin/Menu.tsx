@@ -117,7 +117,7 @@ function DraggableDish({
       </div>
 
       {d.image ? (
-        <img src={d.image} alt="" className="w-14 h-14 object-cover rounded-lg border border-gold/20 shrink-0 pointer-events-none" />
+        <img src={d.image} alt="" loading="lazy" className="w-14 h-14 object-cover rounded-lg border border-gold/20 shrink-0 pointer-events-none" />
       ) : (
         <div className="w-14 h-14 rounded-lg bg-forest-dark flex items-center justify-center text-offwhite-dim/30 border border-gold/10 shrink-0 pointer-events-none">
           <ImageIcon size={20} />
@@ -448,7 +448,7 @@ export function AdminMenu() {
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-sm text-offwhite-dim mb-1.5">Фото {dishModal.editing?.image && ""}</label>
-                  {dishModal.editing?.image && !dishForm.imageFile && <img src={dishModal.editing.image} alt="" className="w-full h-40 object-cover rounded-xl mb-3 border border-gold/10" />}
+                  {dishModal.editing?.image && !dishForm.imageFile && <img src={dishModal.editing.image} alt="" loading="lazy" className="w-full h-40 object-cover rounded-xl mb-3 border border-gold/10" />}
                   <input type="file" accept="image/*" onChange={(e) => setDishForm({ ...dishForm, imageFile: e.target.files?.[0] ?? null })} className="w-full text-sm text-offwhite-dim file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-bold file:uppercase file:bg-gold/10 file:text-gold hover:file:bg-gold hover:file:text-forest-dark file:cursor-pointer file:transition-all border border-gold/20 rounded-xl bg-forest p-2" />
                 </div>
               </div>

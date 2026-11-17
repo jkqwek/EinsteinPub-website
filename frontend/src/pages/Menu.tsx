@@ -48,7 +48,6 @@ export function Menu() {
           alt=""
           className="w-full h-full object-cover"
         />
-        {/* Neutral shading; only the last strip fades into the page, since dish cards scroll over the photo's edge */}
         <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/30 via-85% to-forest" />
       </div>
 
@@ -138,6 +137,7 @@ export function Menu() {
                               <img
                                 src={item.image}
                                 alt={item.name}
+                                loading="lazy"
                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                               />
                               <span className="absolute top-3 left-3 bg-burgundy text-gold-light text-[10px] sm:text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-sm shadow-md">

@@ -8,36 +8,35 @@ from .serializers import (
     AdminDishSerializer,
     CategorySerializer,
 )
+from apps.users.views import IsSuperAdmin
 
 
 # --- Публичные ---
-
 class MenuView(generics.ListAPIView):
     """Меню для сайта: активные категории, в каждой только доступные блюда."""
-
     serializer_class = CategorySerializer
     queryset = Category.objects.filter(is_active=True).prefetch_related(
         Prefetch("dishes", queryset=Dish.objects.filter(is_available=True))
     )
 
 
-# --- Админские ---
+# --- Админские (ТОЛЬКО СУПЕР-АДМИН) ---
 
 class AdminCategoryListCreateView(generics.ListCreateAPIView):
     queryset = Category.objects.all().order_by("sort_order", "name")
     serializer_class = AdminCategorySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperAdmin]
 
 
 class AdminCategoryDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = AdminCategorySerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperAdmin]
 
 
 class AdminDishListCreateView(generics.ListCreateAPIView):
     serializer_class = AdminDishSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperAdmin]
 
     def get_queryset(self):
         qs = Dish.objects.select_related("category").order_by("sort_order", "name")
@@ -50,4 +49,4 @@ class AdminDishListCreateView(generics.ListCreateAPIView):
 class AdminDishDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Dish.objects.select_related("category")
     serializer_class = AdminDishSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperAdmin]

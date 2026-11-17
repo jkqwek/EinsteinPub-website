@@ -51,7 +51,7 @@ import {
   type PubEvent,
 } from "./api"
 
-import heroBg from "./assets/hero-bg.png" 
+import heroBg from "./assets/hero-bg.webp"
 import logo from "./assets/logo.png"
 
 function cn(...inputs: ClassValue[]) {

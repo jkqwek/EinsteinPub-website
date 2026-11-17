@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAdminUser
 
 from .models import Photo
 from .serializers import AdminPhotoSerializer, PhotoSerializer
+from apps.users.views import IsSuperAdmin
 
 
 class PhotoListView(generics.ListAPIView):
@@ -13,10 +14,10 @@ class PhotoListView(generics.ListAPIView):
 class AdminPhotoListCreateView(generics.ListCreateAPIView):
     queryset = Photo.objects.all()
     serializer_class = AdminPhotoSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperAdmin]
 
 
 class AdminPhotoDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Photo.objects.all()
     serializer_class = AdminPhotoSerializer
-    permission_classes = [IsAdminUser]
+    permission_classes = [IsSuperAdmin]

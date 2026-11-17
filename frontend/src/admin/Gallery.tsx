@@ -117,7 +117,7 @@ export function AdminGallery() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {photos.map((p, i) => (
             <motion.div key={p.id} layout className="group rounded-2xl overflow-hidden bg-forest-dark/30 border border-gold/10 relative aspect-[4/3] hover:border-gold/30 transition-all">
-              <img src={p.image} alt={p.caption} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <img src={p.image} alt={p.caption} loading="lazy" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-80 group-hover:opacity-100 transition-opacity" />
               
               <div className="absolute top-3 right-3 flex gap-1.5 opacity-0 group-hover:opacity-100 transition-all">
@@ -147,7 +147,7 @@ export function AdminGallery() {
                 <button type="button" onClick={closeModal} className="p-2 text-offwhite-dim hover:text-gold bg-forest-light/5 rounded-lg transition-colors"><X size={20} /></button>
               </div>
 
-              {modal.editing?.image && !form.imageFile && <img src={modal.editing.image} alt="" className="w-full h-48 object-cover rounded-xl mb-3 border border-gold/10" />}
+              {modal.editing?.image && !form.imageFile && <img src={modal.editing.image} alt="" loading="lazy" className="w-full h-48 object-cover rounded-xl mb-3 border border-gold/10" />}
 
               <div>
                 <label className="block text-sm text-offwhite-dim mb-1.5">Файл {modal.editing ? "" : "*"}</label>

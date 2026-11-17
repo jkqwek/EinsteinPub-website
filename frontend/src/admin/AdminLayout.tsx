@@ -18,12 +18,13 @@ function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-// hiring: only for administrators (can_hire from /api/auth/me/), the API enforces it too
+// adminOnly: только для супер-админов
+// hiring: только для тех, у кого can_hire (супер-админы)
 const navItems = [
   { to: "/admin/events", label: "События", icon: CalendarDays },
-  { to: "/admin/menu", label: "Меню", icon: MenuIcon },
-  { to: "/admin/gallery", label: "Галерея", icon: Images },
   { to: "/admin/bookings", label: "Брони", icon: ClipboardList },
+  { to: "/admin/menu", label: "Меню", icon: MenuIcon, adminOnly: true },
+  { to: "/admin/gallery", label: "Галерея", icon: Images, adminOnly: true },
   { to: "/admin/vacancies", label: "Вакансии", icon: Briefcase, hiring: true },
   { to: "/admin/applications", label: "Отклики", icon: FileText, hiring: true },
 ]
@@ -31,6 +32,7 @@ const navItems = [
 export function AdminLayout() {
   const navigate = useNavigate()
   const [canHire, setCanHire] = useState(false)
+  const [isAdmin, setIsAdmin] = useState(false)
 
   useEffect(() => {
     if (!isAuthed()) {
@@ -39,8 +41,11 @@ export function AdminLayout() {
     }
     adminFetch("/api/auth/me/")
       .then((res) => (res.ok ? res.json() : null))
-      .then((me) => setCanHire(Boolean(me?.can_hire)))
-      .catch(() => {}) // an expired session is handled by the section pages
+      .then((me) => {
+        setCanHire(Boolean(me?.can_hire))
+        setIsAdmin(Boolean(me?.is_admin))
+      })
+      .catch(() => {})
   }, [navigate])
 
   function onLogout() {
@@ -57,23 +62,29 @@ export function AdminLayout() {
         </div>
 
         <nav className="flex-1 p-4 space-y-1.5 overflow-y-auto">
-          {navItems.filter((item) => !item.hiring || canHire).map(({ to, label, icon: Icon }) => (
-            <NavLink
-              key={to}
-              to={to}
-              className={({ isActive }) =>
-                cn(
-                  "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
-                  isActive
-                    ? "bg-gold/10 text-gold"
-                    : "text-offwhite-dim hover:text-offwhite hover:bg-forest-light/5"
-                )
-              }
-            >
-              <Icon size={18} />
-              <span>{label}</span>
-            </NavLink>
-          ))}
+          {navItems
+            .filter((item) => {
+              if (item.adminOnly && !isAdmin) return false;
+              if (item.hiring && !canHire) return false;
+              return true;
+            })
+            .map(({ to, label, icon: Icon }) => (
+              <NavLink
+                key={to}
+                to={to}
+                className={({ isActive }) =>
+                  cn(
+                    "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200",
+                    isActive
+                      ? "bg-gold/10 text-gold"
+                      : "text-offwhite-dim hover:text-offwhite hover:bg-forest-light/5"
+                  )
+                }
+              >
+                <Icon size={18} />
+                <span>{label}</span>
+              </NavLink>
+            ))}
         </nav>
 
         <div className="p-4 border-t border-gold/10 space-y-1">
