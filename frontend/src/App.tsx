@@ -13,6 +13,7 @@ import {
   MapPin,
   Phone,
   ArrowRight,
+  CalendarX,
 } from "lucide-react"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
@@ -250,7 +251,8 @@ function Home() {
         </motion.div>
       </section>
 
-      {enabledSections.events && futureEvents.length > 0 && (
+      {/* БЛОК СОБЫТИЙ НА ГЛАВНОЙ */}
+      {enabledSections.events && (
         <section className="py-24 px-6 max-w-7xl mx-auto">
           <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
             <div>
@@ -262,11 +264,35 @@ function Home() {
             </Link>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {futureEvents.map((event, i) => (
-              <EventCard key={event.id} event={event} index={i} />
-            ))}
-          </div>
+          {futureEvents.length > 0 ? (
+            <div className="grid md:grid-cols-3 gap-6">
+              {futureEvents.map((event, i) => (
+                <EventCard key={event.id} event={event} index={i} />
+              ))}
+            </div>
+          ) : (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="flex flex-col items-center justify-center py-16 px-6 bg-forest-dark/40 border border-gold/20 rounded-2xl text-center backdrop-blur-sm hover:border-gold/50 hover:shadow-[0_12px_40px_-8px_rgba(97,24,32,0.8)] transition-all duration-300"
+            >
+              <div className="w-16 h-16 rounded-full bg-gold/10 flex items-center justify-center mb-6">
+                <CalendarX size={32} className="text-gold" />
+              </div>
+              <h3 className="text-2xl md:text-3xl font-display text-offwhite mb-3">Афиша пока пуста</h3>
+              <p className="text-offwhite-dim text-base max-w-lg mb-8 leading-relaxed">
+                Мы готовим для вас новые интересные вечера, дегустации и встречи. 
+                Загляните сюда чуть позже или посмотрите, что уже было в архиве событий.
+              </p>
+              <Link 
+                to="/events" 
+                className="px-8 py-3 bg-transparent border border-gold text-gold font-bold uppercase text-sm rounded-sm hover:bg-gold/10 transition-colors"
+              >
+                Перейти в афишу
+              </Link>
+            </motion.div>
+          )}
         </section>
       )}
 
