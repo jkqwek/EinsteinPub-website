@@ -9,10 +9,31 @@ import {
   socialLinks,
 } from "../siteInfo"
 import { OpenStatus } from "../components/OpenStatus"
+import { FormulaBackdrop } from "../components/FormulaBackdrop"
+
+// Равномерная смесь узоров афиши и галереи: по шесть формул каждого типа.
+const contactsPattern = {
+  image: `url("data:image/svg+xml,${encodeURIComponent(`<svg width='400' height='350' xmlns='http://www.w3.org/2000/svg' font-family='serif' fill='#fabc55'>
+    <text x='20' y='52' font-size='38' transform='rotate(-15 20 52)'>E=mc²</text>
+    <text x='220' y='36' font-size='28' transform='rotate(12 220 36)'>c = λν</text>
+    <text x='170' y='112' font-size='54' transform='rotate(10 170 112)'>∑</text>
+    <text x='18' y='154' font-size='36' transform='rotate(-8 18 154)'>E = hν</text>
+    <text x='245' y='175' font-size='48' transform='rotate(-18 245 175)'>πr²</text>
+    <text x='105' y='218' font-size='21' transform='rotate(-4 105 218)'>1/F = 1/d + 1/f</text>
+    <text x='20' y='292' font-size='48' transform='rotate(-5 20 292)'>∫</text>
+    <text x='182' y='270' font-size='20' transform='rotate(6 182 270)'>n₁ sin α = n₂ sin β</text>
+    <text x='320' y='90' font-size='34' transform='rotate(25 320 90)'>√−1</text>
+    <text x='315' y='328' font-size='26' transform='rotate(14 315 328)'>f/1.8</text>
+    <text x='95' y='330' font-size='30' transform='rotate(15 95 330)'>∮</text>
+    <text x='330' y='235' font-size='42' transform='rotate(-10 330 235)'>λ</text>
+  </svg>`)}")`,
+  size: "400px 350px",
+}
 
 export function Contacts() {
   return (
-    <div className="pt-32 pb-24 px-6 max-w-7xl mx-auto min-h-screen">
+    <FormulaBackdrop pattern={contactsPattern}>
+    <div className="relative z-10 pt-32 pb-24 px-6 max-w-7xl mx-auto min-h-screen">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -130,5 +151,6 @@ export function Contacts() {
         </motion.div>
       </div>
     </div>
+    </FormulaBackdrop>
   )
 }

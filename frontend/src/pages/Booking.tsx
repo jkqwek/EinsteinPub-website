@@ -5,6 +5,7 @@ import { Check, Plus, Minus, Loader2, Sparkles } from "lucide-react"
 import { clsx, type ClassValue } from "clsx"
 import { twMerge } from "tailwind-merge"
 import { createBooking } from "../api"
+import bookingHero from "../assets/booking-hero.jpg"
 
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -30,6 +31,18 @@ function formatDate(value: string) {
     day: "numeric",
     month: "long",
   })
+}
+
+function BookingBackdrop({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="relative min-h-screen overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <img src={bookingHero} alt="" className="w-full h-full object-cover scale-110" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/65 via-black/45 via-85% to-black/45" />
+      </div>
+      <div className="relative z-10">{children}</div>
+    </div>
+  )
 }
 
 const inputClass =
@@ -70,6 +83,7 @@ export function Booking() {
 
   if (status === "success") {
     return (
+      <BookingBackdrop>
       <div className="pt-32 pb-24 px-6 min-h-screen flex items-center justify-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
@@ -100,10 +114,12 @@ export function Booking() {
           </button>
         </motion.div>
       </div>
+      </BookingBackdrop>
     )
   }
 
   return (
+    <BookingBackdrop>
     <div className="pt-32 pb-24 px-6 min-h-screen flex items-center justify-center">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
@@ -283,5 +299,6 @@ export function Booking() {
         </form>
       </motion.div>
     </div>
+    </BookingBackdrop>
   )
 }
